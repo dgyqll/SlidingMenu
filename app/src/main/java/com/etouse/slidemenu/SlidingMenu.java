@@ -139,4 +139,36 @@ public class SlidingMenu extends FrameLayout {
         return true;
     }
 
+    /**
+     * 判断是否展开
+     * @return
+     */
+    public boolean isExpand(){
+        if (mainView.getLeft() == 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * 展开
+     */
+    public void expand(){
+        if (!isExpand()) {
+            dragHelper.smoothSlideViewTo(mainView, scrollRange, 0);
+            ViewCompat.postInvalidateOnAnimation(mainView);
+        }
+    }
+
+    /**
+     * 关闭
+     */
+    public void close(){
+        if (isExpand()) {
+            dragHelper.smoothSlideViewTo(mainView, 0, 0);
+            ViewCompat.postInvalidateOnAnimation(mainView);
+        }
+    }
+
 }
