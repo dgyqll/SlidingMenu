@@ -132,6 +132,7 @@ public class SlidingMenu extends FrameLayout {
         return result;
     }
 
+    
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         dragHelper.processTouchEvent(event);
