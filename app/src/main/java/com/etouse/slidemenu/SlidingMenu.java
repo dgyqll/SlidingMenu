@@ -1,6 +1,10 @@
 package com.etouse.slidemenu;
 
+import android.animation.ArgbEvaluator;
+import android.animation.FloatEvaluator;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -66,16 +70,18 @@ public class SlidingMenu extends FrameLayout {
 
                 mainView.layout( newLeft,0, newLeft + mainView.getWidth(),mainView.getBottom());
                 invalidate();
+
                 return 0;
             }
+            if (child == mainView) {
+                //限制主页的移动范围
+                if ((child.getLeft() + dx) < 0) {
+                    return 0;
+                }
 
-            //限制主页的移动范围
-            if ((child.getLeft() + dx) < 0) {
-                return 0;
-            }
-
-            if ((child.getLeft() + dx) > scrollRange) {
-                return scrollRange;
+                if ((child.getLeft() + dx) > scrollRange) {
+                    return scrollRange;
+                }
             }
             return left;
         }
@@ -101,9 +107,26 @@ public class SlidingMenu extends FrameLayout {
 
         }
 
+        @Override
+        public void onViewPositionChanged(View changedView, int left, int top, int dx, int dy) {
+            super.onViewPositionChanged(changedView, left, top, dx, dy);
+            float percent = (float) mainView.getLeft() / (float) scrollRange;
+            startAnim(percent);
+        }
+
+
     };
 
+    private void startAnim(float percent) {
+        FloatEvaluator floatEvaluator = new FloatEvaluator();
+        mainView.setScaleX(floatEvaluator.evaluate(percent,1.0f,0.8f));
+        mainView.setScaleY(floatEvaluator.evaluate(percent,1.0f,0.8f));
+        menuView.setScaleX(floatEvaluator.evaluate(percent,0.8f,1.0f));
+        menuView.setScaleY(floatEvaluator.evaluate(percent,0.8f,1.0f));
 
+        ArgbEvaluator argbEvaluator = new ArgbEvaluator();
+        getBackground().setColorFilter((Integer) argbEvaluator.evaluate(floatEvaluator.evaluate(percent,0.8f,0.4f),Color.WHITE,Color.BLACK), PorterDuff.Mode.SRC_OVER);
+    }
     @Override
     public void computeScroll() {
         super.computeScroll();
